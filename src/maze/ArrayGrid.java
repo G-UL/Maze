@@ -63,16 +63,6 @@ ArrayGrid<T> implements Grid<T>
 	}
 
 
-//	@Override
-//	public
-//	boolean
-//	equals(Grid<T> other)
-//	{
-//		// TODO Auto-generated method stub
-//		return false;
-//	}
-
-
 	@Override
 	public
 	Sprite
@@ -109,5 +99,24 @@ ArrayGrid<T> implements Grid<T>
 			T item)
 	{
 		this.grid[row][column] = (Sprite) item;
+	}
+
+
+	@Override
+	public
+	String
+	toString()
+	{
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < this.getNumRows(); i++)
+		{
+			for (int j = 0; j < this.getNumColumns(); j++)
+			{
+				result.append(this.grid[i][j].getSymbol());
+			}
+			result.append("\n");
+		}
+
+		return result.toString();
 	}
 }

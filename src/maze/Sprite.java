@@ -28,6 +28,11 @@ Sprite
 	}
 
 
+	/**********************************************************************
+	 ************************* Getters & Setters **************************
+	 **********************************************************************/
+
+
 	public
 	char
 	getSymbol()
@@ -73,5 +78,14 @@ Sprite
 	setRow(int row)
 	{
 		this.row = row;
+	}
+
+
+	@Override
+	public
+	String
+	toString()
+	{
+		return String.valueOf(this.getSymbol());
 	}
 }

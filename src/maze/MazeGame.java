@@ -1,10 +1,11 @@
 package maze;
 
 
+// Java
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 
@@ -24,130 +25,283 @@ public
 class
 MazeGame
 {
-    // A random number generator to move the MobileBananas.
-//    private
-//    Random
-//    random;
-    
-
-    // The maze grid.
-    private
-    Grid<Sprite>
-    maze;
+	// The maze grid.
+	private
+	ArrayGrid<Sprite>
+	maze;
 
 
 	private
-    Monkey
-    // The first player.
-    player1,
-    // The second player.
-    player2;
-
-    // The bananas to eat.
-    private
-    List<Banana>
-    bananas;
+	Monkey
+	// The first player.
+	player1,
+	// The second player.
+	player2;
 
 
-    /**
-     * Creates a new MazeGame that corresponds to the maze in the file
-     * named layoutFileName.
-     * @param layoutFileName the path to the input maze file
-     */
-    public
-    MazeGame(String layoutFileName) throws IOException
-    {
-
-        // A random number generator to move the MobileBananas.
-        Random random = new Random();
-        int[] dimensions = getDimensions(layoutFileName);
-        maze = new ArrayGrid<Sprite>(dimensions[0],
-        								dimensions[1]);
-        Scanner sc = new Scanner(new File(layoutFileName));
-
-        /* INITIALIZE THE GRID HERE */
-    
-        sc.close();
-    }
+	// The bananas to eat.
+	private
+	List<Banana>
+	bananas;
 
 
-    /**
-     * Returns the dimensions of the maze in the file named layoutFileName.
-     * @param layoutFileName the path of the input maze file
-     * @return an array [numRows, numCols], where numRows is the number
-     * 		   of rows and numCols is the number of columns in the maze that
-     * 		   corresponds to the given input maze file
-     * @throws IOException
-     */
-    private
-    int[]
-    	getDimensions(String layoutFileName) throws IOException
-    {
-        Scanner sc = new Scanner(new File(layoutFileName));
-        // Finds the number of columns.
-        String nextLine = sc.nextLine();
-        int numCols = nextLine.length();
-        int numRows = 1;
+	/**
+	 * Creates a new MazeGame that corresponds to the maze in the file
+	 * named layoutFileName.
+	 * @param layoutFileName the path to the input maze file
+	 */
+	public
+	MazeGame(String layoutFileName) throws IOException
+	{
+		int[] dimensions = getDimensions(layoutFileName);
+		maze = new ArrayGrid<Sprite>(dimensions[0],
+									 dimensions[1]);
+		maze.setNumColumns(dimensions[1]);
+		maze.setNumRows(dimensions[0]);
 
-        // Finds the number of rows
-        while (sc.hasNext())
-        {
-            numRows++;
-            nextLine = sc.nextLine();
-        }
-        sc.close();
+		/* INITIALIZE THE GRID */
+		int i = 0;
+		bananas = new ArrayList<Banana> ();
+		Scanner sc = new Scanner(new File(layoutFileName));
+		while (sc.hasNextLine())
+		{
+			String line = sc.nextLine();
+			for (int j = 0; j < line.length(); j++)
+			{
+				Sprite cell = Helper.createSprite(line.charAt(j),
+												  i,
+												  j);
+				maze.setCell(i,
+							 j,
+							 cell);
 
-        return new int[]{numRows,
-        					numCols};
-    }
+				if (Helper.isBanana(cell))
+				{
+					bananas.add((Banana) cell);
+				}
 
+				if (cell.getSymbol() == '1')
+				{
+					this.setPlayer1((Monkey) cell);
+				}
 
-    public
-    int
-    getNumRows()
-    {
-		return 0;
+				if (cell.getSymbol() == '2')
+				{
+					this.setPlayer2((Monkey) cell);
+				}
+			}
+			i++;
+		}
+
+		sc.close();
+		this.setMaze(maze);
 	}
 
 
-    public
-    void
-    move(char nextMove)
-    {
+	/**
+	 * Returns the dimensions of the maze in the file named layoutFileName.
+	 * @param layoutFileName the path of the input maze file
+	 * @return an array [numRows, numCols], where numRows is the number
+	 * 		   of rows and numCols is the number of columns in the maze that
+	 * 		   corresponds to the given input maze file
+	 * @throws IOException
+	 */
+	private
+	int[]
+	getDimensions(String layoutFileName) throws IOException
+	{
+		Scanner sc = new Scanner(new File(layoutFileName));
+		// Finds the number of columns.
+		String nextLine = sc.nextLine();
+		int numCols = nextLine.length();
+		int numRows = 1;
 
+		// Finds the number of rows
+		while (sc.hasNext())
+		{
+			numRows++;
+			nextLine = sc.nextLine();
+		}
+		sc.close();
+
+		return new int[] {numRows,
+						  numCols};
 	}
 
 
-    public
-    int
-    hasWon()
-    {
-		return 0;
+	public
+	void
+	handlePlayerMovement(Monkey player,
+						 int[] movement)
+	{
+		if (player == null ||
+			movement[0] == 0) return ;
+
+		int row = player.getRow(),
+			column = player.getColumn();
+		int newRow = row + movement[1],
+			newColumn = column + movement[2];
+		Sprite nextCell = maze.getCell(newRow,
+									  newColumn);
+		if (Helper.isMoveable(nextCell))
+		{
+			if (Helper.isBanana(nextCell))
+			{
+				removeBanana(player,
+							 nextCell);
+			}
+
+			Sprite vh = new VisitedHallway ('.',
+											row,
+											column);
+			maze.setCell(row,
+						 column,
+						 vh);
+			player.setStats(newRow,
+							newColumn);
+			maze.setCell(newRow,
+						 newColumn,
+						 player);
+		}
 	}
 
 
-    public
-    boolean
-    isBlocked()
-    {
+	public
+	int
+	hasWon()
+	{
+		if (bananas.size() == 0)
+		{
+			if (player1.getScore() > player2.getScore())
+			{
+				return 1;
+			}
+			else if (player1.getScore() < player2.getScore())
+			{
+				return 2;
+			}
+			else
+			{
+				return 3;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+
+	public
+	boolean
+	isBlocked()
+	{
+		if (player1.isBlocked(this.getMaze()) &&
+			player2.isBlocked(this.getMaze()))
+		{
+			return true;
+		}
+
 		return false;
 	}
 
 
-    public
-    int
-    getNumCols()
-    {
-		return 0;
+	public
+	void
+	move(char nextMove)
+	{
+		int valid[] = Helper.isValidMovement(nextMove);
+		Monkey player = null;
+		if (valid[0] == 1)
+		{
+			player = player1;
+		}
+		else if (valid[0] == 2)
+		{
+			player = player2;
+		}
+
+		handlePlayerMovement(player,
+							 valid);
+		moveBananas();
 	}
 
 
-    public
-    Sprite
-    get(int i,
-    		int j)
-    {
-		return null;
+	public
+	void
+	moveBananas()
+	{
+		for (int i = 0; i < bananas.size(); i++)
+		{
+			if (bananas.get(i) instanceof MobileBanana)
+			{
+				MobileBanana mb = (MobileBanana) bananas.get(i);
+				int row = mb.getRow(),
+					column = mb.getColumn();
+				int[] mbMovement = Helper.nextMove();
+				int newRow = row + mbMovement[0],
+					newColumn = column + mbMovement[1];
+				Sprite nextSpot = this.get(newRow,
+										   newColumn);
+				if (Helper.isMoveableForMobileBanana(nextSpot))
+				{
+					mb.move(newRow,
+							newColumn);
+					maze.setCell(newRow,
+								 newColumn,
+								 mb);
+					Sprite uvh = new UnvisitedHallway(' ',
+													  row,
+													  column);
+					maze.setCell(row,
+								 column,
+								 uvh);
+				}
+			}
+		}
+	}
+
+
+	public
+	void
+	removeBanana(Monkey player,
+				 Sprite banana)
+	{
+		int score = player.getScore() + ((Banana) banana).getScore();
+		System.out.println(score);
+		player.setScore(score);
+		bananas.remove(banana);
+	}
+
+
+	/**********************************************************************
+	 ************************* Getters & Setters **************************
+	 **********************************************************************/
+
+
+	public
+	Sprite
+	get(int i,
+		int j)
+	{
+		return this.maze.getCell(i,
+								 j);
+	}
+
+
+	public
+	List<Banana>
+	getBananas()
+	{
+		return bananas;
+	}
+
+
+	public
+	void
+	setBananas(List<Banana> bananas)
+	{
+		this.bananas = bananas;
 	}
 
 
@@ -155,14 +309,38 @@ MazeGame
 	Grid<Sprite>
 	getMaze()
 	{
-		return null;
+		return maze;
 	}
 
 
-    public
-    Monkey
-    getPlayer1()
-    {
+	public
+	void
+	setMaze(ArrayGrid<Sprite> maze)
+	{
+		this.maze = maze;
+	}
+
+
+	public
+	int
+	getNumCols()
+	{
+		return this.maze.getNumColumns();
+	}
+
+
+	public
+	int
+	getNumRows()
+	{
+		return this.maze.getNumRows();
+	}
+
+
+	public
+	Monkey
+	getPlayer1()
+	{
 		return player1;
 	}
 
@@ -189,29 +367,4 @@ MazeGame
 	{
 		this.player2 = player2;
 	}
-
-
-	public
-	List<Banana>
-	getBananas()
-	{
-		return bananas;
-	}
-
-
-	public
-	void
-	setBananas(List<Banana> bananas)
-	{
-		this.bananas = bananas;
-	}
-
-
-	public
-	void
-	setMaze(Grid<Sprite> maze)
-	{
-		this.maze = maze;
-	}
-
 }

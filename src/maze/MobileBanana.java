@@ -6,6 +6,10 @@ class
 MobileBanana extends Banana
 			 implements Moveable
 {
+	private
+	int
+	score;
+
 
 	public
 	MobileBanana(char symbol,
@@ -15,6 +19,15 @@ MobileBanana extends Banana
 		super(symbol,
 			  row,
 			  column);
+		this.score = MazeConstants.MOBILE_BANANA_SCORE;
+	}
+
+
+	public
+	int
+	getScore()
+	{
+		return score;
 	}
 
 
@@ -24,7 +37,6 @@ MobileBanana extends Banana
 	move(int row,
 		 int column)
 	{
-		// TODO Auto-generated method stub
 		this.setRow(row);
 		this.setColumn(column);
 	}

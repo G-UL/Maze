@@ -13,10 +13,10 @@ MazeConstants
 	final
 	String
 	// Sets to the path of file.
-	FILENAME = "",
-	// Sets to either "text" or "gui"
-	UI_TYPE = "gui";
-
+	// For Eclipse Compiler Usage.
+	FILENAME = "/assets/maze1.txt";
+	// For jar File Usage.
+	// FILENAME = "/src/assets/maze1.txt";
 
 	public
 	static
@@ -66,6 +66,8 @@ MazeConstants
 	LEFT = -1,
 	// The score for a mobile banana.
 	MOBILE_BANANA_SCORE = 2,
+	// No Movement
+	NO_MOVEMENT = 0,
 	// The adjustment for moving right.
 	RIGHT = 1,
 	// The adjustment for moving up.

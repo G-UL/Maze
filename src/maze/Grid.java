@@ -5,11 +5,6 @@ public
 interface
 Grid<T>
 {
-//	public
-//	boolean
-//	equals(Grid<T> other);
-
-
 	public
 	Sprite
 	getCell(int row,
@@ -31,6 +26,16 @@ Grid<T>
 	setCell(int row,
 			int column,
 			T item);
+
+
+	public
+	void
+	setNumColumns(int numColumns);
+
+
+	public
+	void
+	setNumRows(int numRows);
 
 
 	public
