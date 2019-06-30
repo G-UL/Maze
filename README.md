@@ -1,5 +1,6 @@
 # Simple TextUI Maze Game
 
+<pre>
 XXXXXXXXXXXXXXXXXXXXXXXX
 X  .......1     X B  X X
 X X. X        X  X XXX X
@@ -12,6 +13,7 @@ X X    X    X MX  XXXXXX
 X XXXXX   X XXXXX      X
 X B       X   B   X  X X
 XXXXXXXXXXXXXXXXXXXXXXXX
+</pre>
 
 ## SetUp
 This application was written in Java 8 and preferrable for JVM8.
